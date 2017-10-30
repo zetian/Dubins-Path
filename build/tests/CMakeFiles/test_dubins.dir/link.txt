@@ -1,1 +1,0 @@
-/usr/bin/cc   -rdynamic CMakeFiles/test_dubins.dir/test_dubins.c.o  -o ../bin/test_dubins 
