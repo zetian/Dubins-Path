@@ -23,6 +23,7 @@
 // }
 #include "dubins_curve/dubins.hpp"
 #include <stdio.h>
+#include <iostream>
 
 int printConfiguration(std::vector<double> q, double x, void* user_data) {
     printf("%f,%f,%f,%f\n", q[0], q[1], q[2], x);
@@ -34,10 +35,11 @@ int main()
     std::vector<double> q0 = { 0,0,0 };
     std::vector<double> q1 = { 4,4,3.142 };
     DubinsPath path;
+    
     dubins_init( q0, q1, 1.0, path);
-
+    // std::cout << "~~~test~~~" << std::endl; 
     printf("#x,y,theta,t\n");
-    dubins_path_sample_many( path, printConfiguration, 0.1, NULL);
+    dubins_path_sample_many(path, 0.1);
 
     return 0;
 }

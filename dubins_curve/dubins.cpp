@@ -1,26 +1,7 @@
-// Copyright (c) 2008-2014, Andrew Walker
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 #include "dubins.hpp"
 #include <math.h>
 #include <assert.h>
+#include <iostream>
 
 #define EPSILON (10e-10)
 
@@ -100,7 +81,9 @@ int dubins_LSL( double alpha, double beta, double d, std::vector<double>& output
     double t = mod2pi(-alpha + tmp1 );
     double p = sqrt( p_squared );
     double q = mod2pi(beta - tmp1 );
-    PACK_OUTPUTS(outputs);
+    outputs = {t, p, q};
+    // PACK_OUTPUTS(outputs);
+    // std::cout << "~~~test~~~" << std::endl; 
     return EDUBOK;
 }
 
@@ -115,7 +98,8 @@ int dubins_RSR( double alpha, double beta, double d, std::vector<double>& output
     double t = mod2pi( alpha - tmp1 );
     double p = sqrt( p_squared );
     double q = mod2pi( -beta + tmp1 );
-    PACK_OUTPUTS(outputs);
+    outputs = {t, p, q};
+    // PACK_OUTPUTS(outputs);
     return EDUBOK;
 }
 
@@ -129,7 +113,8 @@ int dubins_LSR( double alpha, double beta, double d, std::vector<double>& output
     double tmp2 = atan2( (-ca-cb), (d+sa+sb) ) - atan2(-2.0, p);
     double t    = mod2pi(-alpha + tmp2);
     double q    = mod2pi( -mod2pi(beta) + tmp2 );
-    PACK_OUTPUTS(outputs);
+    outputs = {t, p, q};
+    // PACK_OUTPUTS(outputs);
     return EDUBOK;
 }
 
@@ -143,7 +128,8 @@ int dubins_RSL( double alpha, double beta, double d, std::vector<double>& output
     double tmp2 = atan2( (ca+cb), (d-sa-sb) ) - atan2(2.0, p);
     double t    = mod2pi(alpha - tmp2);
     double q    = mod2pi(beta - tmp2);
-    PACK_OUTPUTS(outputs);
+    outputs = {t, p, q};
+    // PACK_OUTPUTS(outputs);
     return EDUBOK;
 }
 
@@ -156,7 +142,8 @@ int dubins_RLR( double alpha, double beta, double d, std::vector<double>& output
     double p = mod2pi( 2*M_PI - acos( tmp_rlr ) );
     double t = mod2pi(alpha - atan2( ca-cb, d-sa+sb ) + mod2pi(p/2.));
     double q = mod2pi(alpha - beta - t + mod2pi(p));
-    PACK_OUTPUTS( outputs );
+    outputs = {t, p, q};
+    // PACK_OUTPUTS(outputs);
     return EDUBOK;
 }
 
@@ -169,7 +156,8 @@ int dubins_LRL( double alpha, double beta, double d, std::vector<double>& output
     double p = mod2pi( 2*M_PI - acos( tmp_lrl ) );
     double t = mod2pi(-alpha - atan2( ca-cb, d+sa-sb ) + p/2.);
     double q = mod2pi(mod2pi(beta) - alpha -t + mod2pi(p));
-    PACK_OUTPUTS( outputs );
+    outputs = {t, p, q};
+    // PACK_OUTPUTS(outputs);
     return EDUBOK;
 }
 
@@ -183,25 +171,26 @@ double dubins_path_length(DubinsPath& path )
     return length;
 }
 
-// int dubins_curve_type(int type, double alpha, double beta, double d, std::vector<double>& outputs){
-//     switch(type){
-//         case 0: return dubins_LSL(alpha, beta, d, outputs);
-//         case 1: return dubins_LSR(alpha, beta, d, outputs);
-//         case 2: return dubins_RSL(alpha, beta, d, outputs);
-//         case 3: return dubins_RSR(alpha, beta, d, outputs);
-//         case 4: return dubins_RLR(alpha, beta, d, outputs);
-//         case 5: return dubins_LRL(alpha, beta, d, outputs);
-//     }
-// }
+int dubins_curve_type(int type, double alpha, double beta, double d, std::vector<double>& outputs){
+    switch(type){
+        case 0: return dubins_LSL(alpha, beta, d, outputs);
+        case 1: return dubins_LSR(alpha, beta, d, outputs);
+        case 2: return dubins_RSL(alpha, beta, d, outputs);
+        case 3: return dubins_RSR(alpha, beta, d, outputs);
+        case 4: return dubins_RLR(alpha, beta, d, outputs);
+        case 5: return dubins_LRL(alpha, beta, d, outputs);
+    }
+    return 0;
+}
 
-std::vector<DubinsWord> dubins_words = {
-    dubins_LSL,
-    dubins_LSR,
-    dubins_RSL,
-    dubins_RSR,
-    dubins_RLR,
-    dubins_LRL,
-};
+// std::vector<DubinsWord> dubins_words = {
+//     dubins_LSL,
+//     dubins_LSR,
+//     dubins_RSL,
+//     dubins_RSR,
+//     dubins_RLR,
+//     dubins_LRL,
+// };
 
 int dubins_init_normalised( double alpha, double beta, double d, DubinsPath& path)
 {
@@ -212,7 +201,10 @@ int dubins_init_normalised( double alpha, double beta, double d, DubinsPath& pat
     best_word = -1;
     for( i = 0; i < 6; i++ ) {
         std::vector<double> params;
-        int err = dubins_words[i](alpha, beta, d, params);
+        // std::cout << "~~~dubins_words~~~" << dubins_words.size() << std::endl;
+        int err = dubins_curve_type(i, alpha, beta, d, params);
+        // int err = dubins_words[i](alpha, beta, d, params);
+        // std::cout << "~~~test~~~" << std::endl; 
         if(err == EDUBOK) {
             double cost = params[0] + params[1] + params[2];
             if(cost < best_cost) {
@@ -244,6 +236,7 @@ int dubins_init(std::vector<double> q0, std::vector<double> q1, double rho, Dubi
     if( rho <= 0. ) {
         return EDUBBADRHO;
     }
+    
     double theta = mod2pi(atan2( dy, dx ));
     double alpha = mod2pi(q0[2] - theta);
     double beta  = mod2pi(q1[2] - theta);
@@ -251,8 +244,9 @@ int dubins_init(std::vector<double> q0, std::vector<double> q1, double rho, Dubi
         path.qi[i] = q0[i];
     }
     path.rho = rho;
-
+    
     return dubins_init_normalised(alpha, beta, d, path);
+    
 }
 
 int dubins_path_type( DubinsPath& path ) {
@@ -262,21 +256,24 @@ int dubins_path_type( DubinsPath& path ) {
 void dubins_segment( double t, std::vector<double> qi, std::vector<double>& qt, int type)
 {
     assert( type == L_SEG || type == S_SEG || type == R_SEG );
-
+    
     if( type == L_SEG ) {
-        qt[0] = qi[0] + sin(qi[2]+t) - sin(qi[2]);
-        qt[1] = qi[1] - cos(qi[2]+t) + cos(qi[2]);
-        qt[2] = qi[2] + t;
+        qt = {qi[0] + sin(qi[2]+t) - sin(qi[2]), qi[1] - cos(qi[2]+t) + cos(qi[2]), qi[2] + t};
+        // qt[0] = qi[0] + sin(qi[2]+t) - sin(qi[2]);
+        // qt[1] = qi[1] - cos(qi[2]+t) + cos(qi[2]);
+        // qt[2] = qi[2] + t;
     }
     else if( type == R_SEG ) {
-        qt[0] = qi[0] - sin(qi[2]-t) + sin(qi[2]);
-        qt[1] = qi[1] + cos(qi[2]-t) - cos(qi[2]);
-        qt[2] = qi[2] - t;
+        qt = {qi[0] - sin(qi[2]-t) + sin(qi[2]), qi[1] + cos(qi[2]-t) - cos(qi[2]), qi[2] - t};
+        // qt[0] = qi[0] - sin(qi[2]-t) + sin(qi[2]);
+        // qt[1] = qi[1] + cos(qi[2]-t) - cos(qi[2]);
+        // qt[2] = qi[2] - t;
     }
     else if( type == S_SEG ) {
-        qt[0] = qi[0] + cos(qi[2]) * t;
-        qt[1] = qi[1] + sin(qi[2]) * t;
-        qt[2] = qi[2];
+        qt = {qi[0] + cos(qi[2])*t, qi[1] + sin(qi[2])*t, qi[2]};
+        // qt[0] = qi[0] + cos(qi[2]) * t;
+        // qt[1] = qi[1] + sin(qi[2]) * t;
+        // qt[2] = qi[2];
     }
 }
 
@@ -304,42 +301,53 @@ int dubins_path_sample( DubinsPath& path, double t, std::vector<double> q)
     std::vector<double> qi = { 0, 0, path.qi[2] };
 
     // Generate the target configuration
+    
     const int* types = DIRDATA[path.type];
     double p1 = path.param[0];
     double p2 = path.param[1];
     std::vector<double> q1; // end-of segment 1
     std::vector<double> q2; // end-of segment 2
     dubins_segment( p1,      qi,    q1, types[0] );
+    
     dubins_segment( p2,      q1,    q2, types[1] );
+    
     if( tprime < p1 ) {
         dubins_segment( tprime, qi, q, types[0] );
+        
     }
     else if( tprime < (p1+p2) ) {
         dubins_segment( tprime-p1, q1, q,  types[1] );
+        
     }
     else {
         dubins_segment( tprime-p1-p2, q2, q,  types[2] );
+         
     }
-
+    
     // scale the target configuration, translate back to the original starting point
     q[0] = q[0] * path.rho + path.qi[0];
     q[1] = q[1] * path.rho + path.qi[1];
     q[2] = mod2pi(q[2]);
 
+    std::cout << "x: " << q[0] << ", y: " << q[1] << ", z: " << q[2] << std::endl;
+    
     return 0;
 }
 
-int dubins_path_sample_many( DubinsPath& path, DubinsPathSamplingCallback cb, double stepSize, void* user_data )
+int dubins_path_sample_many( DubinsPath& path, double stepSize)
 {
     double x = 0.0;
     double length = dubins_path_length(path);
     while( x <  length ) {
         std::vector<double> q;
+        
         dubins_path_sample( path, x, q );
-        int retcode = cb(q, x, user_data);
-        if( retcode != 0 ) {
-            return retcode;
-        }
+        
+        // int retcode = cb(q, x, user_data);
+        // std::cout << "~~~test~~~" << std::endl;
+        // if( retcode != 0 ) {
+        //     return retcode;
+        // }
         x += stepSize;
     }
     return 0;

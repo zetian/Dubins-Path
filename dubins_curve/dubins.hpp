@@ -53,7 +53,7 @@ namespace DubinsSteer {
 
 // // The various types of solvers for each of the path types
 // // typedef int (*DubinsWord)(double, double, double, double* );
-typedef int (*DubinsWord)(double, double, double, std::vector<double>&);
+// typedef int (*DubinsWord)(double, double, double, std::vector<double>&);
 
 // // A complete list of the possible solvers that could give optimal paths 
 // extern DubinsWord dubins_words[]; 
@@ -126,7 +126,7 @@ int dubins_path_sample( DubinsPath& path, double t, std::vector<double> q);
  * @param user_data - optional information to pass on to the callback
  * @param stepSize  - the distance along the path for subsequent samples
  */
-int dubins_path_sample_many( DubinsPath& path, DubinsPathSamplingCallback cb, double stepSize, void* user_data );
+int dubins_path_sample_many( DubinsPath& path, double stepSize);
 
 /**
  * Convenience function to identify the endpoint of a path
