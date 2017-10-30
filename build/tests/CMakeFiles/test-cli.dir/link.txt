@@ -1,0 +1,1 @@
+/usr/bin/cc   -rdynamic CMakeFiles/test-cli.dir/test-cli.c.o  -o ../bin/test-cli ../lib/libdubins.a 

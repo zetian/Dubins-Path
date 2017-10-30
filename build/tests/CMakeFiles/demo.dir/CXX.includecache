@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+..//dubins_curve/dubins.hpp
+vector
+-
+
+/home/zetian/Workspace/dubins_path/tests/demo.cpp
+dubins_curve/dubins.hpp
+/home/zetian/Workspace/dubins_path/tests/dubins_curve/dubins.hpp
+stdio.h
+-
+

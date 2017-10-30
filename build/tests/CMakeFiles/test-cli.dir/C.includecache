@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/zetian/Workspace/dubins_path/tests/test-cli.c
+dubins.h
+/home/zetian/Workspace/dubins_path/tests/dubins.h
+stdio.h
+-
+math.h
+-
+assert.h
+-
+
