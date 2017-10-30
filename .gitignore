@@ -1,3 +1,10 @@
+# Temp files
+*/Debug
+build
+build2
+*/build
+build*
+
 # Prerequisites
 *.d
 
