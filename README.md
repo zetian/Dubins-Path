@@ -4,7 +4,7 @@ This software finds the shortest paths between configurations for the Dubins' ca
 
 # Examples
 
-The following code demos how to generate a sequence of points along the shortest path between a pair of configuration (x, y, theta).
+The following code demos how to generate a sequence of points along the shortest path between a pair of configurations (x, y, theta).
 
 
 ```cpp
