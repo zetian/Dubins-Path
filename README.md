@@ -1,4 +1,4 @@
-# Dubins Curves
+# Dubins Path
 
 This software finds the shortest paths between configurations for the Dubins' car model, the forward only car-like vehicle with a constrained turning radius.
 
