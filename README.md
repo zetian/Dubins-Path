@@ -6,7 +6,7 @@ This software finds the shortest paths between configurations for the Dubins' ca
 
 The following code demos how to generate a sequence of points along the shortest path between a pair of configuration (x, y, theta).
 
-.. code-block:: cpp
+.. code-block:: c
 
     #include "dubins_curve/dubins.h"
     #include <iostream>
