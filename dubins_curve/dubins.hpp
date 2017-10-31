@@ -1,4 +1,4 @@
-// Copyright (c) 2008-2014, Andrew Walker
+// Copyright (c) 2008-2014, Zetian Zhang
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,31 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <vector>
-
-namespace DubinsSteer {
-	typedef struct{
-		std::vector<std::vector<double>> traj_point_wise;
-		std::vector<double> traj_len_map;
-		double traj_length;
-		std::vector<double> z_new;
-	}SteerData;
-
-
-	double GetDubinsCurveLength(std::vector<double> z_0, std::vector<double> z_f, double radius_L, double radius_R);
-	SteerData GetDubinsTrajectoryPointWise(std::vector<double> z_0, std::vector<double> z_f, double radius_L, double radius_R);
-};
-
 #ifndef DUBINS_H
 #define DUBINS_H
 
-// Path types
-#define LSL (0)
-#define LSR (1)
-#define RSL (2)
-#define RSR (3)
-#define RLR (4)
-#define LRL (5)
+#include <vector>
 
 // Error codes
 #define EDUBOK        (0)   // No error
@@ -51,107 +30,46 @@ namespace DubinsSteer {
 #define EDUBBADRHO    (3)   // the rho value is invalid
 #define EDUBNOPATH    (4)   // no connection between configurations with this word
 
-// // The various types of solvers for each of the path types
-// // typedef int (*DubinsWord)(double, double, double, double* );
-// typedef int (*DubinsWord)(double, double, double, std::vector<double>&);
+typedef struct{
+	// the initial configuration
+	std::vector<double> qi = std::vector<double>(3);     
+	// the lengths of the three segments
+	std::vector<double> param = std::vector<double>(3);
+	// model forward velocity / model angular velocity
+	double rho;     
+	// path type. one of LSL, LSR, ...     
+    int type;           
+}DubinsPath;
 
-// // A complete list of the possible solvers that could give optimal paths 
-// extern DubinsWord dubins_words[]; 
+namespace DubinsSteer{
+	typedef struct{
+		// a sequence of configurations(x, y, theta) along the path
+		std::vector<std::vector<double>> traj_point_wise;
+		// length map of the sequence of configurations
+		std::vector<double> traj_len_map;
+		// the length of the steering path
+		double traj_length;
+	}SteerData;
 
-typedef struct
-{
-    std::vector<double> qi = std::vector<double>(3);     // the initial configuration
-    std::vector<double> param = std::vector<double>(3);    // the lengths of the three segments
-    double rho;         // model forward velocity / model angular velocity
-    int type;           // path type. one of LSL, LSR, ... 
-} DubinsPath;
+	/**
+	 * Calculate the length of an initialised path
+	 *
+	 * @param q0 - the initial configuration
+	 * @param q1 - the end configuration
+	 * @param min_radius - minimum turning radius
+	 */
+	double GetDubinsCurveLength(std::vector<double> q0, std::vector<double> q1, double min_radius);
 
-/**
- * Callback function for path sampling
- *
- * @note the q parameter is a configuration
- * @note the t parameter is the distance along the path
- * @note the user_data parameter is forwarded from the caller
- * @note return non-zero to denote sampling should be stopped
- */
-typedef int (*DubinsPathSamplingCallback)(std::vector<double> q, double t, void* user_data);
-
-/**
- * Generate a path from an initial configuration to
- * a target configuration, with a specified maximum turning
- * radii
- *
- * A configuration is (x, y, theta), where theta is in radians, with zero
- * along the line x = 0, and counter-clockwise is positive
- *
- * @param q0    - a configuration specified as an array of x, y, theta
- * @param q1    - a configuration specified as an array of x, y, theta
- * @param rho   - turning radius of the vehicle (forward velocity divided by maximum angular velocity)
- * @param path  - the resultant path
- * @return      - non-zero on error
- */
-int dubins_init(std::vector<double> q0, std::vector<double> q1, double rho, DubinsPath& path );
-
-/**
- * Calculate the length of an initialised path
- *
- * @param path - the path to find the length of
- */
-double dubins_path_length(DubinsPath& path);
-
-/**
- * Extract an integer that represents which path type was used
- *
- * @param path    - an initialised path
- * @return        - one of LSL, LSR, RSL, RSR, RLR or LRL (ie/ 0-5 inclusive)
- */
-int dubins_path_type( DubinsPath& path );
-
-/**
- * Calculate the configuration along the path, using the parameter t
- *
- * @param path - an initialised path
- * @param t    - a length measure, where 0 <= t < dubins_path_length(path)
- * @param q    - the configuration result
- * @returns    - non-zero if 't' is not in the correct range
- */
-int dubins_path_sample( DubinsPath& path, double t, std::vector<double> q);
-
-/**
- * Walk along the path at a fixed sampling interval, calling the
- * callback function at each interval
- *
- * @param path      - the path to sample
- * @param cb        - the callback function to call for each sample
- * @param user_data - optional information to pass on to the callback
- * @param stepSize  - the distance along the path for subsequent samples
- */
-int dubins_path_sample_many( DubinsPath& path, double stepSize);
-
-/**
- * Convenience function to identify the endpoint of a path
- *
- * @param path - an initialised path
- * @param q    - the configuration result
- */
-int dubins_path_endpoint(DubinsPath& path, std::vector<double> q);
-
-// /**
-//  * Convenience function to extract a subset of a path
-//  *
-//  * @param path    - an initialised path
-//  * @param t       - a length measure, where 0 < t < dubins_path_length(path)
-//  * @param newpath - the resultant path
-//  */
-int dubins_extract_subpath( DubinsPath& path, double t, DubinsPath& newpath );
-
-// Only exposed for testing purposes
-// int dubins_LSL( double alpha, double beta, double d, double* outputs );
-// int dubins_RSR( double alpha, double beta, double d, double* outputs );
-// int dubins_LSR( double alpha, double beta, double d, double* outputs );
-// int dubins_RSL( double alpha, double beta, double d, double* outputs );
-// int dubins_LRL( double alpha, double beta, double d, double* outputs );
-// int dubins_RLR( double alpha, double beta, double d, double* outputs );
+	/**
+	 * Calculate a sequence of configurations from initial to end
+	 *
+	 * @param q0 - the initial configuration
+	 * @param q1 - the end configuration
+	 * @param min_radius - minimum turning radius
+	 * @param step - a length measure, where 0 <= step < length of the path
+	 */
+	SteerData GetDubinsTrajectoryPointWise(std::vector<double> q0, std::vector<double> q1, double min_radius, double step);
+};
 
 #endif // DUBINS_H
 

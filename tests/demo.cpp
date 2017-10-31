@@ -1,45 +1,21 @@
-// Copyright (c) 2008-2014, Andrew Walker
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.'
-// extern "C"
-// {
-// #include "dubins_curve/dubins.h"
-// }
 #include "dubins_curve/dubins.hpp"
 #include <stdio.h>
 #include <iostream>
-
-int printConfiguration(std::vector<double> q, double x, void* user_data) {
-    printf("%f,%f,%f,%f\n", q[0], q[1], q[2], x);
-    return 0;
-}
+#include <cmath>
 
 int main()
 {
-    std::vector<double> q0 = { 0,0,0 };
-    std::vector<double> q1 = { 4,4,3.142 };
-    DubinsPath path;
+    std::vector<double> q0 = {0, 0, 0};
+    std::vector<double> q1 = {5, 5, M_PI/2};
+    double len = DubinsSteer::GetDubinsCurveLength(q0, q1, 4.99);
     
-    dubins_init( q0, q1, 1.0, path);
-    // std::cout << "~~~test~~~" << std::endl; 
-    printf("#x,y,theta,t\n");
-    dubins_path_sample_many(path, 0.1);
-
+    DubinsSteer::SteerData dubins_steer_data;
+    dubins_steer_data = DubinsSteer::GetDubinsTrajectoryPointWise(q0, q1, 4.99, 0.1);
+    std::vector<std::vector<double>> test_traj_point_wise = dubins_steer_data.traj_point_wise;
+    std::vector<double> test_lens_map = dubins_steer_data.traj_len_map;
+    std::cout << "Length:  " << dubins_steer_data.traj_length << std::endl;
+	for (int i = 0; i < test_traj_point_wise.size(); i++) {
+		std::cout << "piece_wise " << i << ": x: " << test_traj_point_wise[i][0] << ", y: " << test_traj_point_wise[i][1] << ", len: " << test_lens_map[i] << std::endl; 
+	}
     return 0;
 }
