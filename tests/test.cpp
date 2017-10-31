@@ -1,4 +1,4 @@
-#include "dubins_curve/dubins.h"
+#include "dubins_curve/dubins_curve.h"
 #include <iostream>
 
 int main()
