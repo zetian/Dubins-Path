@@ -66,7 +66,7 @@ namespace DubinsSteer{
 	 * @param q0 - the initial configuration
 	 * @param q1 - the end configuration
 	 * @param min_radius - minimum turning radius
-	 * @param step - a length measure, where 0 <= step < length of the path
+	 * @param step - a length measure, where 0 < step < length of the path
 	 */
 	SteerData GetDubinsTrajectoryPointWise(std::vector<double> q0, std::vector<double> q1, double min_radius, double step);
 };

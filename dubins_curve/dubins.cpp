@@ -1,4 +1,4 @@
-#include "dubins.hpp"
+#include "dubins.h"
 #include <math.h>
 #include <assert.h>
 #include <iostream>

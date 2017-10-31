@@ -3,11 +3,8 @@
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-
 # Add libraries
-
 set(DUBINS_LIB_SRC
-	#dubins.c
 	dubins.cpp
 )
 add_library(dubins STATIC ${DUBINS_LIB_SRC})
