@@ -114,7 +114,7 @@ int dubins_LRL(double alpha, double beta, double d, std::vector<double>& outputs
     return EDUBOK;
 }
 
-double dubins_path_length(DubinsPath& path){
+double dubins_path_length(DubinsPathInfo& path){
     double length = 0.;
     length += path.param[0];
     length += path.param[1];
@@ -135,7 +135,7 @@ int dubins_curve_type(int type, double alpha, double beta, double d, std::vector
     return 0;
 }
 
-int dubins_init_normalised(double alpha, double beta, double d, DubinsPath& path){
+int dubins_init_normalised(double alpha, double beta, double d, DubinsPathInfo& path){
     double best_cost = INFINITY;
     int best_word = -1;
     for(int i = 0; i < 6; i++) {
@@ -158,7 +158,7 @@ int dubins_init_normalised(double alpha, double beta, double d, DubinsPath& path
     return EDUBOK;
 }
 
-int dubins_init(std::vector<double> q0, std::vector<double> q1, double rho, DubinsPath& path){
+int dubins_init(std::vector<double> q0, std::vector<double> q1, double rho, DubinsPathInfo& path){
     int i;
     double dx = q1[0] - q0[0];
     double dy = q1[1] - q0[1];
@@ -178,11 +178,11 @@ int dubins_init(std::vector<double> q0, std::vector<double> q1, double rho, Dubi
     return dubins_init_normalised(alpha, beta, d, path);
 }
 
-int dubins_path_type(DubinsPath& path){
+int dubins_path_type(DubinsPathInfo& path){
     return path.type;
 }
 
-void dubins_segment( double t, std::vector<double> qi, std::vector<double>& qt, int type){
+void dubins_segment(double t, std::vector<double> qi, std::vector<double>& qt, int type){
     assert(type == L_SEG || type == S_SEG || type == R_SEG);
     if(type == L_SEG){
         qt = {qi[0] + sin(qi[2]+t) - sin(qi[2]), qi[1] - cos(qi[2]+t) + cos(qi[2]), qi[2] + t};
@@ -195,7 +195,7 @@ void dubins_segment( double t, std::vector<double> qi, std::vector<double>& qt, 
     }
 }
 
-std::vector<double> dubins_path_sample(DubinsPath& path, double t){
+std::vector<double> dubins_path_sample(DubinsPathInfo& path, double t){
     std::vector<double> q;
     // tprime is the normalised variant of the parameter t
     double tprime = t / path.rho;
@@ -223,8 +223,8 @@ std::vector<double> dubins_path_sample(DubinsPath& path, double t){
     return q;
 }
 
-DubinsSteer::SteerData dubins_path_sample_many(DubinsPath& path, double stepSize){
-    DubinsSteer::SteerData dubins_steer_data;
+DubinsPath::PathData dubins_path_sample_many(DubinsPathInfo& path, double stepSize){
+    DubinsPath::PathData dubins_steer_data;
     double x = 0.0;
     double length = dubins_path_length(path);
     dubins_steer_data.traj_length = length;
@@ -237,12 +237,12 @@ DubinsSteer::SteerData dubins_path_sample_many(DubinsPath& path, double stepSize
     return dubins_steer_data;
 }
 
-std::vector<double> dubins_path_endpoint( DubinsPath& path)
+std::vector<double> dubins_path_endpoint(DubinsPathInfo& path)
 {
     return dubins_path_sample( path, dubins_path_length(path) - EPSILON);
 }
 
-int dubins_extract_subpath(DubinsPath& path, double t, DubinsPath& newpath){
+int dubins_extract_subpath(DubinsPathInfo& path, double t, DubinsPathInfo& newpath){
     // calculate the true parameter
     double tprime = t / path.rho;
 
@@ -260,16 +260,16 @@ int dubins_extract_subpath(DubinsPath& path, double t, DubinsPath& newpath){
     return 0;
 }
 
-DubinsSteer::SteerData DubinsSteer::GetDubinsTrajectoryPointWise(std::vector<double> q0, std::vector<double> q1, double min_radius, double step){
-    DubinsPath path;
+DubinsPath::PathData DubinsPath::GetDubinsPathPointWise(std::vector<double> q0, std::vector<double> q1, double min_radius, double step){
+    DubinsPathInfo path;
     dubins_init(q0, q1, min_radius, path);
-    DubinsSteer::SteerData steer_data;
-    steer_data = dubins_path_sample_many(path, step);
-    return steer_data;
+    DubinsPath::PathData path_data;
+    path_data = dubins_path_sample_many(path, step);
+    return path_data;
 }
 
-double DubinsSteer::GetDubinsCurveLength(std::vector<double> q0, std::vector<double> q1, double min_radius){
-    DubinsPath path;
+double DubinsPath::GetDubinsPathLength(std::vector<double> q0, std::vector<double> q1, double min_radius){
+    DubinsPathInfo path;
     dubins_init(q0, q1, min_radius, path);
     return dubins_path_length(path);
 }

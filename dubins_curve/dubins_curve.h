@@ -39,9 +39,9 @@ typedef struct{
 	double rho;     
 	// path type. one of LSL, LSR, ...     
     int type;           
-}DubinsPath;
+}DubinsPathInfo;
 
-namespace DubinsSteer{
+namespace DubinsPath{
 	typedef struct{
 		// a sequence of configurations(x, y, theta) along the path
 		std::vector<std::vector<double>> traj_point_wise;
@@ -49,7 +49,7 @@ namespace DubinsSteer{
 		std::vector<double> traj_len_map;
 		// the length of the steering path
 		double traj_length;
-	}SteerData;
+	}PathData;
 
 	/**
 	 * Calculate the length of an initialised path
@@ -58,7 +58,7 @@ namespace DubinsSteer{
 	 * @param q1 - the end configuration
 	 * @param min_radius - minimum turning radius
 	 */
-	double GetDubinsCurveLength(std::vector<double> q0, std::vector<double> q1, double min_radius);
+	double GetDubinsPathLength(std::vector<double> q0, std::vector<double> q1, double min_radius);
 
 	/**
 	 * Calculate a sequence of configurations from initial to end
@@ -68,7 +68,7 @@ namespace DubinsSteer{
 	 * @param min_radius - minimum turning radius
 	 * @param step - a length measure, where 0 < step < length of the path
 	 */
-	SteerData GetDubinsTrajectoryPointWise(std::vector<double> q0, std::vector<double> q1, double min_radius, double step);
+	PathData GetDubinsPathPointWise(std::vector<double> q0, std::vector<double> q1, double min_radius, double step);
 };
 
 #endif // DUBINS_H
