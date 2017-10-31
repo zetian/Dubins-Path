@@ -32,5 +32,5 @@ include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/utility/)
 
 ## Add other sub source directories
-add_subdirectory(dubins_curve)
+add_subdirectory(dubins_path)
 add_subdirectory(tests)

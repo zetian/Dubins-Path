@@ -1,4 +1,4 @@
-#include "dubins_curve.h"
+#include "dubins_path.h"
 #include <math.h>
 #include <assert.h>
 #include <iostream>
@@ -39,13 +39,13 @@ double mod2pi(double theta){
 int dubins_LSL(double alpha, double beta, double d, std::vector<double>& outputs){
     double tmp0 = d + sin(alpha) - sin(beta);
     double p_squared = 2 + (d*d) -(2*cos(alpha - beta)) + (2*d*(sin(alpha) - sin(beta)));
-    if( p_squared < 0 ) {
+    if( p_squared < 0 ){
         return EDUBNOPATH;
     }
-    double tmp1 = atan2( (cos(beta) - cos(alpha)), tmp0 );
-    double t = mod2pi(-alpha + tmp1 );
-    double p = sqrt( p_squared );
-    double q = mod2pi(beta - tmp1 );
+    double tmp1 = atan2( (cos(beta) - cos(alpha)), tmp0);
+    double t = mod2pi(-alpha + tmp1);
+    double p = sqrt(p_squared);
+    double q = mod2pi(beta - tmp1);
     outputs = {t, p, q};
     return EDUBOK;
 }
@@ -53,26 +53,26 @@ int dubins_LSL(double alpha, double beta, double d, std::vector<double>& outputs
 int dubins_RSR(double alpha, double beta, double d, std::vector<double>& outputs){
     double tmp0 = d - sin(alpha) + sin(beta);
     double p_squared = 2 + (d*d) -(2*cos(alpha - beta)) + (2*d*(sin(beta) - sin(alpha)));
-    if( p_squared < 0 ) {
+    if( p_squared < 0 ){
         return EDUBNOPATH;
     }
-    double tmp1 = atan2( (cos(alpha) - cos(beta)), tmp0 );
-    double t = mod2pi( alpha - tmp1 );
-    double p = sqrt( p_squared );
-    double q = mod2pi( -beta + tmp1 );
+    double tmp1 = atan2((cos(alpha) - cos(beta)), tmp0);
+    double t = mod2pi(alpha - tmp1);
+    double p = sqrt(p_squared);
+    double q = mod2pi(-beta + tmp1);
     outputs = {t, p, q};
     return EDUBOK;
 }
 
 int dubins_LSR(double alpha, double beta, double d, std::vector<double>& outputs){
     double p_squared = -2 + (d*d) + (2*cos(alpha - beta)) + (2*d*(sin(alpha) + sin(beta)));
-    if( p_squared < 0 ) {
+    if( p_squared < 0 ){
         return EDUBNOPATH;
     }
-    double p    = sqrt( p_squared );
+    double p = sqrt(p_squared);
     double tmp2 = atan2( (-cos(alpha) - cos(beta)), (d+sin(alpha) + sin(beta)) ) - atan2(-2.0, p);
-    double t    = mod2pi(-alpha + tmp2);
-    double q    = mod2pi( -mod2pi(beta) + tmp2 );
+    double t = mod2pi(-alpha + tmp2);
+    double q = mod2pi(-mod2pi(beta) + tmp2);
     outputs = {t, p, q};
     return EDUBOK;
 }
@@ -82,21 +82,21 @@ int dubins_RSL(double alpha, double beta, double d, std::vector<double>& outputs
     if( p_squared< 0 ) {
         return EDUBNOPATH;
     }
-    double p    = sqrt( p_squared );
-    double tmp2 = atan2( (cos(alpha) + cos(beta)), (d-sin(alpha) - sin(beta)) ) - atan2(2.0, p);
-    double t    = mod2pi(alpha - tmp2);
-    double q    = mod2pi(beta - tmp2);
+    double p = sqrt(p_squared);
+    double tmp2 = atan2((cos(alpha) + cos(beta)), (d-sin(alpha) - sin(beta)) ) - atan2(2.0, p);
+    double t = mod2pi(alpha - tmp2);
+    double q = mod2pi(beta - tmp2);
     outputs = {t, p, q};
     return EDUBOK;
 }
 
 int dubins_RLR(double alpha, double beta, double d, std::vector<double>& outputs){
-    double tmp_rlr = (6. - d*d + 2*cos(alpha - beta) + 2*d*(sin(alpha) - sin(beta))) / 8.;
-    if( fabs(tmp_rlr) > 1) {
+    double tmp_rlr = (6. - d*d + 2*cos(alpha - beta) + 2*d*(sin(alpha) - sin(beta)))/8.;
+    if( fabs(tmp_rlr) > 1){
         return EDUBNOPATH;
     }
-    double p = mod2pi( 2*M_PI - acos( tmp_rlr ) );
-    double t = mod2pi(alpha - atan2( cos(alpha) - cos(beta), d-sin(alpha) + sin(beta) ) + mod2pi(p/2.));
+    double p = mod2pi(2*M_PI - acos(tmp_rlr));
+    double t = mod2pi(alpha - atan2( cos(alpha) - cos(beta), d-sin(alpha) + sin(beta)) + mod2pi(p/2.));
     double q = mod2pi(alpha - beta - t + mod2pi(p));
     outputs = {t, p, q};
     return EDUBOK;

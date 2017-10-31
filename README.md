@@ -8,7 +8,7 @@ The following code demos how to generate a sequence of points along the shortest
 
 
 ```cpp
-    #include "dubins_curve/dubins_curve.h"
+    #include "dubins_path/dubins_path.h"
     #include <iostream>
 
     int main()
